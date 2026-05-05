@@ -65,14 +65,14 @@ export default function TasksPage() {
 
   const fetchTasks = async () => {
     setLoading(true);
-    const res = await fetch("http://localhost:8000/tasks", { headers: authHeader });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, { headers: authHeader });
     if (res.status === 401) { router.push("/login"); return; }
     if (res.ok) setTasks((await res.json()).tasks ?? []);
     setLoading(false);
   };
 
   const fetchCategories = async () => {
-    const res = await fetch("http://localhost:8000/categories", { headers: authHeader });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, { headers: authHeader });
     if (res.ok) setCategories(await res.json());
   };
 
@@ -90,7 +90,7 @@ export default function TasksPage() {
 
   const handleSubmitAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:8000/tasks", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks`, {
       method: "POST",
       headers: jsonHeaders,
       body: JSON.stringify({
@@ -106,7 +106,7 @@ export default function TasksPage() {
   const handleSubmitEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editTask) return;
-    const res = await fetch(`http://localhost:8000/tasks/${editTask.id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${editTask.id}`, {
       method: "PATCH",
       headers: jsonHeaders,
       body: JSON.stringify({
@@ -121,21 +121,21 @@ export default function TasksPage() {
 
   const toggleComplete = async (task: Task) => {
     const url = task.status === "done"
-      ? `http://localhost:8000/tasks/${task.id}/restore`
-      : `http://localhost:8000/tasks/${task.id}/complete`;
+      ? `${process.env.NEXT_PUBLIC_API_URL}/tasks/${task.id}/restore`
+      : `${process.env.NEXT_PUBLIC_API_URL}/tasks/${task.id}/complete`;
     const res = await fetch(url, { method: "PATCH", headers: authHeader });
     if (res.ok) fetchTasks();
   };
 
   const deleteTask = async () => {
     if (deleteTaskId === null) return;
-    const res = await fetch(`http://localhost:8000/tasks/${deleteTaskId}`, { method: "DELETE", headers: authHeader });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tasks/${deleteTaskId}`, { method: "DELETE", headers: authHeader });
     if (res.ok) { setTasks((p) => p.filter((t) => t.id !== deleteTaskId)); setDeleteTaskId(null); }
   };
 
   const createCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("http://localhost:8000/categories", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
       method: "POST",
       headers: jsonHeaders,
       body: JSON.stringify({ name: newCategoryName, color: newCategoryColor }),
